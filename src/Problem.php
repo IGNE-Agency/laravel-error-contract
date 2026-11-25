@@ -42,8 +42,8 @@ final readonly class Problem implements Arrayable, Responsable
      * exception: a model not found is already a 404 HttpException, a denied Gate a 403 one, an
      * expired CSRF token a 419 one.
      *
-     * A `detail` is only set when it is safe to show: the message of an application error
-     * ({@see ProblemDetails::isApplicationError()}) or of a validation error, or the message of an
+     * A `detail` is only set when it is safe to show: the message of a named error
+     * ({@see ProblemDetails::isNamedError()}) or of a validation error, or the message of an
      * unexpected error while debugging.
      */
     public static function fromException(Throwable $exception, Request $request): self
@@ -51,7 +51,7 @@ final readonly class Problem implements Arrayable, Responsable
         [$status, $detail] = match (true) {
             $exception instanceof ValidationException => [$exception->status, $exception->getMessage()],
             $exception instanceof AuthenticationException => [Response::HTTP_UNAUTHORIZED, null],
-            $exception instanceof HttpExceptionInterface => [$exception->getStatusCode(), ProblemDetails::isApplicationError($exception::class) ? $exception->getMessage() : null],
+            $exception instanceof HttpExceptionInterface => [$exception->getStatusCode(), ProblemDetails::isNamedError($exception::class) ? $exception->getMessage() : null],
             default => [Response::HTTP_INTERNAL_SERVER_ERROR, config('app.debug') ? $exception->getMessage() : null],
         };
 

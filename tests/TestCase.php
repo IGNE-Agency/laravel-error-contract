@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Igne\ProblemDetails\Tests;
 
-use Dedoc\Scramble\ScrambleServiceProvider;
-use Igne\ProblemDetails\OpenApi\OpenApiServiceProvider;
 use Igne\ProblemDetails\ProblemDetailsServiceProvider;
 use Igne\ProblemDetails\Tests\Concerns\InteractsWithProblemDetails;
 use Orchestra\Testbench\TestCase as Testbench;
 
 /**
- * An application with the package and the fixture routes. Scramble is part of it only when it is
- * installed, so the same tests of the responses run with and without it.
+ * An application with the package and the fixture routes.
  */
 abstract class TestCase extends Testbench
 {
@@ -20,17 +17,13 @@ abstract class TestCase extends Testbench
 
     protected function getPackageProviders($app): array
     {
-        return array_values(array_filter([
-            class_exists(ScrambleServiceProvider::class) ? ScrambleServiceProvider::class : null,
-            ProblemDetailsServiceProvider::class,
-            OpenApiServiceProvider::class,
-        ]));
+        return [ProblemDetailsServiceProvider::class];
     }
 
     protected function defineEnvironment($app): void
     {
-        // The document is read without the access check of Scramble's own middleware.
-        $app['config']->set('scramble.middleware', []);
+        // The session and its cookies, for the routes of the `web` group.
+        $app['config']->set('app.key', 'base64:'.base64_encode(str_repeat('k', 32)));
     }
 
     protected function defineRoutes($router): void

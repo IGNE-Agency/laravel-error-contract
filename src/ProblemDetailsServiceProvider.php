@@ -6,6 +6,7 @@ namespace Igne\ProblemDetails;
 
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Foundation\Exceptions\Handler;
+use Illuminate\Foundation\Http\Kernel as FoundationKernel;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -13,9 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 /**
- * Answers every error on a configured path as RFC 9457 Problem Details. Nothing here knows about
- * an API document: {@see OpenApi\OpenApiServiceProvider} documents the answers when the
- * application uses Scramble.
+ * Answers every error on a configured path as RFC 9457 Problem Details. The package only renders:
+ * it holds no documentation and knows no documentation tool.
  */
 final class ProblemDetailsServiceProvider extends ServiceProvider
 {
@@ -32,8 +32,16 @@ final class ProblemDetailsServiceProvider extends ServiceProvider
     {
         $this->publishes([__DIR__.'/../config/problem-details.php' => $this->app->configPath('problem-details.php')], 'problem-details-config');
 
+        $kernel = $this->app->make(Kernel::class);
+
         // First, so every log line of the request and a Problem Details error share one trace id.
-        $this->app->make(Kernel::class)->prependMiddleware(AssignTraceId::class);
+        $kernel->prependMiddleware(AssignTraceId::class);
+
+        // Laravel's `password.confirm` answers a JSON request itself; ours throws, so the 423 is an error like
+        // any other. It is set on the kernel, which writes its aliases to the router whenever its middleware changes.
+        if ($kernel instanceof FoundationKernel) {
+            $kernel->setMiddlewareAliases([...$kernel->getMiddlewareAliases(), 'password.confirm' => RequirePassword::class]);
+        }
     }
 
     /**

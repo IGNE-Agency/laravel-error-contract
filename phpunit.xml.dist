@@ -8,9 +8,6 @@
         <testsuite name="Rendering">
             <directory>tests/Rendering</directory>
         </testsuite>
-        <testsuite name="OpenApi">
-            <directory>tests/OpenApi</directory>
-        </testsuite>
     </testsuites>
     <source>
         <include>

@@ -1,6 +1,6 @@
 {
     "name": "igne-agency/laravel-problem-details",
-    "description": "Answers every API error as RFC 9457 Problem Details, and documents those answers per endpoint when the application uses Scramble.",
+    "description": "Answers every API error of a Laravel application as RFC 9457 Problem Details.",
     "type": "library",
     "license": "MIT",
     "require": {
@@ -11,17 +11,9 @@
         "illuminate/validation": "^12.0|^13.0"
     },
     "require-dev": {
-        "dedoc/scramble": "^0.13.52",
         "orchestra/testbench": "^10.0|^11.0",
         "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0"
-    },
-    "conflict": {
-        "dedoc/scramble": "<0.13.52 || >=0.14"
-    },
-    "suggest": {
-        "dedoc/scramble": "Documents the Problem Details answers of each endpoint in the OpenAPI document.",
-        "igne-agency/laravel-scramble-extensions": "Lets Scramble also see what the middleware of a route and the methods an action calls throw, so those errors are documented too."
     },
     "autoload": {
         "psr-4": {
@@ -36,8 +28,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Igne\\ProblemDetails\\ProblemDetailsServiceProvider",
-                "Igne\\ProblemDetails\\OpenApi\\OpenApiServiceProvider"
+                "Igne\\ProblemDetails\\ProblemDetailsServiceProvider"
             ]
         }
     },
