@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Igne\ProblemDetails\AssignTraceId;
+use Igne\ErrorContract\AssignTraceId;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Session\TokenMismatchException;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
-it('answers an exception that extends ProblemException with its status, its message and the code of its class name', function () {
+it('answers a named error with its status, its message and the code of its class name', function () {
     $response = $this->getJson('/api/fixtures/articles/1');
 
     $this->assertProblem($response, 404, 'article_not_found')

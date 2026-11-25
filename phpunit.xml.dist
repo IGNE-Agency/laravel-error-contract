@@ -8,8 +8,8 @@
         <testsuite name="Rendering">
             <directory>tests/Rendering</directory>
         </testsuite>
-        <testsuite name="OpenApi">
-            <directory>tests/OpenApi</directory>
+        <testsuite name="Packages">
+            <directory>tests/Packages</directory>
         </testsuite>
     </testsuites>
     <source>

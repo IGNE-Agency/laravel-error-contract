@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Igne\ProblemDetails\Tests\Fixtures;
+namespace Igne\ErrorContract\Tests\Fixtures;
 
-use Igne\ProblemDetails\ProblemException;
+use Igne\ErrorContract\ProblemException;
 use Symfony\Component\HttpFoundation\Response;
 
 final class PaymentRequiredException extends ProblemException

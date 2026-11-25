@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Igne\ProblemDetails;
+namespace Igne\ErrorContract;
 
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 /**
- * What an exception and its status say about a problem, shared by the response ({@see Problem})
- * and the API document: every status tells the `type`, the `title` and the `code`, and an error the
- * application describes itself, a {@see ProblemException}, also tells its `code` by its class name
+ * What an exception and its status say about a problem: every status tells the `type`, the `title`
+ * and the `code`, and a named error ({@see isNamedError()}) also tells its `code` by its class name
  * (`FileNotFoundException` is `file_not_found`).
  */
 final class ProblemDetails
@@ -30,27 +30,52 @@ final class ProblemDetails
     private const array RFC_6585_SECTIONS = [428 => 3, 429 => 4, 431 => 5, 511 => 6];
 
     /**
-     * An error the application describes itself: a {@see ProblemException}. Every other exception
-     * says nothing beyond its status, and its message is the framework's or not meant to be shown.
+     * A named error: an HTTP exception that stands for one error of its own, told by its class.
+     * Its class name is the `code` and its message is the `detail`. An exception is named when it
+     * is declared in one of the configured namespaces (the application's and the packages that
+     * follow the same rules), when the configuration gives its class a code, or when it extends
+     * {@see ProblemException}. Nothing has to extend a class of this package to be named.
+     *
+     * Every other exception, Symfony's and Laravel's own HTTP exceptions included, says nothing
+     * beyond its status, and its message is the framework's or not meant to be shown.
      *
      * @param  class-string  $exceptionClass
      */
-    public static function isApplicationError(string $exceptionClass): bool
+    public static function isNamedError(string $exceptionClass): bool
     {
-        return is_subclass_of($exceptionClass, ProblemException::class);
+        if (! is_subclass_of($exceptionClass, HttpExceptionInterface::class)) {
+            return false;
+        }
+
+        if (is_subclass_of($exceptionClass, ProblemException::class) || is_string(config('error-contract.codes', [])[$exceptionClass] ?? null)) {
+            return true;
+        }
+
+        foreach ((array) config('error-contract.namespaces', []) as $namespace) {
+            if (is_string($namespace) && str_starts_with($exceptionClass, rtrim($namespace, '\\').'\\')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
-     * The key a client switches on: the class name of an application error in snake_case without
-     * its `Exception` suffix, or else the reason phrase of the status (`not_found`).
+     * The key a client switches on: of a named error the code the configuration gives its class,
+     * or else its class name in snake_case without the `Exception` suffix; of any other exception
+     * the reason phrase of the status (`not_found`).
      *
      * @param  class-string  $exceptionClass
      */
     public static function code(string $exceptionClass, int $status): string
     {
-        return self::isApplicationError($exceptionClass)
-            ? Str::snake(Str::beforeLast(class_basename($exceptionClass), 'Exception'))
-            : self::statusCode($status);
+        if (! self::isNamedError($exceptionClass)) {
+            return self::statusCode($status);
+        }
+
+        $configured = config('error-contract.codes', [])[$exceptionClass] ?? null;
+
+        return is_string($configured) ? $configured : Str::snake(Str::beforeLast(class_basename($exceptionClass), 'Exception'));
     }
 
     /**
