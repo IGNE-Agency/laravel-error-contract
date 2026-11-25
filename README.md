@@ -1,6 +1,6 @@
 # igne-agency/laravel-problem-details
 
-Answers every API error of a Laravel application as [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) Problem Details (`application/problem+json`). When the application uses [Scramble](https://scramble.dedoc.co), the package also documents those answers per endpoint in the OpenAPI document.
+Answers every API error of a Laravel application as [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) Problem Details (`application/problem+json`). The package only renders: it holds no documentation and knows no documentation tool.
 
 ```json
 {
@@ -18,7 +18,6 @@ Answers every API error of a Laravel application as [RFC 9457](https://www.rfc-e
 
 - PHP 8.4
 - Laravel 12 or 13
-- Optional: dedoc/scramble 0.13.52 or a later 0.13 release
 
 ## Install
 
@@ -26,7 +25,7 @@ Answers every API error of a Laravel application as [RFC 9457](https://www.rfc-e
 composer require igne-agency/laravel-problem-details
 ```
 
-Nothing else has to be registered. To change the paths, publish the config:
+Nothing else has to be registered. To change the settings, publish the config:
 
 ```bash
 php artisan vendor:publish --tag=problem-details-config
@@ -35,55 +34,47 @@ php artisan vendor:publish --tag=problem-details-config
 | Key | Default | Meaning |
 |---|---|---|
 | `paths` | `['api/*']` | The request paths whose errors are answered as Problem Details, as patterns of `Request::is()`. An error on any other path is left to Laravel. |
+| `namespaces` | `['App\\', 'Igne\\']` | An HTTP exception declared in one of these namespaces is a named error. |
+| `codes` | `[]` | A single class from outside those namespaces to name, or a class to give another code than its name. |
 
-## The two halves
+## What it does
 
-The package has two service providers.
+- Every exception on a configured path becomes a Problem Details response.
+- `code` is the key a client switches on: the class name of a named error (`article_not_found`), the reason phrase of the status (`not_found`) for any other exception.
+- A validation error lists its `errors` per input, each with the `validation_rule_code` of the failed rule, Laravel's `message` and the parameters of the rule as `properties`.
+- Every request gets a trace id in the log context, returned as `traceId`.
+- Laravel's `password.confirm` answers a JSON request itself, which no exception handler sees. The package points that alias at a version that throws, so the 423 is a problem like any other (`password_confirmation_required`). Outside the configured paths Laravel renders the same status and message as before.
 
-**`ProblemDetailsServiceProvider` renders.** It needs nothing but Laravel:
+## Named errors
 
-- every exception on a configured path becomes a Problem Details response;
-- `code` is the key a client switches on: the reason phrase of the status (`not_found`) for a framework exception, the class name for an error of the application;
-- a validation error lists its `errors` per input, each with the `validation_rule_code` of the failed rule, Laravel's `message` and the parameters of the rule as `properties`;
-- every request gets a trace id in the log context, returned as `traceId`.
-
-**`OpenApi\OpenApiServiceProvider` documents.** It does nothing unless Scramble is installed, by the application itself or by another package it requires. With Scramble, each endpoint documents:
-
-- one Problem Details response per status, with a named schema per `code` (`ArticleNotFoundProblem`);
-- for a validation error, the inputs of the request and the rule codes each can fail (`StoreArticleValidationProblem`);
-- `Problem` and `ProblemCode`, the closed set of every problem the API can answer.
-
-## Errors of the application
-
-Extend `ProblemException` once per error and pass the status to the constructor:
+An error with a class of its own is told by that class. Nothing has to extend a class of this package:
 
 ```php
-use Igne\ProblemDetails\ProblemException;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * The article was removed or never existed.
  */
-final class ArticleNotFoundException extends ProblemException
+final class ArticleNotFoundException extends NotFoundHttpException
 {
     public function __construct()
     {
-        parent::__construct(Response::HTTP_NOT_FOUND, 'The article does not exist.');
+        parent::__construct('The article does not exist.');
     }
 }
 ```
 
 - The class name is the `code`: `article_not_found`.
 - The message is the `detail`, shown to the user, so it must be safe to show.
-- The first paragraph of the docblock describes the problem in the API document.
+- The status comes from the exception, as for any HTTP exception.
 
-Any other exception, Symfony's and Laravel's own HTTP exceptions included, is answered with the `code` of its status and without a `detail`.
+This holds for an HTTP exception of the application and of any package in a configured namespace. A package that throws Symfony's HTTP exceptions therefore needs no dependency on this one, and answers Laravel's own errors when this package is not installed. `ProblemException` remains as an optional base class for a status Symfony has no exception for.
 
-## What gets documented
+Any other exception, Symfony's and Laravel's own HTTP exceptions and those of a third party included, is answered with the `code` of its status and without a `detail`. To name one of a third party, list it in `codes`, or map it to an exception of your own with Laravel's `$exceptions->map()`.
 
-The documentation reads the exceptions Scramble knows an action throws. Scramble by itself only sees what the action throws directly, plus a few framework cases (a missing model, the `auth` and `can` middleware, a Form Request).
+## Documentation
 
-To also document what the middleware of a route throws and what the methods an action calls throw, install [`igne-agency/laravel-scramble-extensions`](https://github.com/IGNE-Agency/laravel-scramble-extensions). The two packages do not reference each other: that one adds the exceptions to Scramble's model, and this one documents whatever is there.
+This package documents nothing. [`igne-agency/laravel-scramble-extensions`](https://github.com/IGNE-Agency/laravel-scramble-extensions) documents the errors of an API by asking the application what it answers, so it documents Problem Details when this package is installed, without the two referring to each other.
 
 ## Development
 
@@ -91,5 +82,3 @@ To also document what the middleware of a route throws and what the methods an a
 composer install
 composer test
 ```
-
-`tests/Rendering` runs without Scramble; `tests/OpenApi` is skipped when Scramble is not installed.
