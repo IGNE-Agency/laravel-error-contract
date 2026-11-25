@@ -22,29 +22,13 @@ jobs:
           php-version: '8.4'
           coverage: none
 
+      # igne-agency/laravel-auth, which the package is tested against, needs Laravel 13.
+      - name: Leave out the auth package on Laravel 12
+        if: matrix.laravel == '12.*'
+        run: composer remove --dev igne-agency/laravel-auth --no-update --no-interaction
+
       - name: Install dependencies
         run: composer update --with="illuminate/support:${{ matrix.laravel }}" --prefer-dist --no-interaction
-
-      - name: Pest
-        run: composer test
-
-  without-scramble:
-    name: PHP 8.4 without Scramble
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-          coverage: none
-
-      - name: Install dependencies
-        run: composer update --prefer-dist --no-interaction
-
-      - name: Remove Scramble
-        run: composer remove --dev dedoc/scramble --no-interaction
 
       - name: Pest
         run: composer test

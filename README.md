@@ -82,3 +82,5 @@ This package documents nothing. [`igne-agency/laravel-api-docs`](https://github.
 composer install
 composer test
 ```
+
+`tests/Packages` answers the errors of a real package that knows nothing of this one: [`igne-agency/laravel-auth`](https://github.com/IGNE-Agency/laravel-auth), installed for development only. A package is tested together with this one here, never in the package itself. The auth package needs Laravel 13, so on Laravel 12 it is left out and these tests define nothing.
