@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Igne\ProblemDetails;
+namespace Igne\ErrorContract;
 
 use Symfony\Component\HttpKernel\Exception\LockedHttpException;
 

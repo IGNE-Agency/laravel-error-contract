@@ -1,5 +1,5 @@
 {
-    "name": "igne-agency/laravel-problem-details",
+    "name": "igne-agency/laravel-error-contract",
     "description": "Answers every API error of a Laravel application as RFC 9457 Problem Details.",
     "type": "library",
     "license": "MIT",
@@ -17,18 +17,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Igne\\ProblemDetails\\": "src/"
+            "Igne\\ErrorContract\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Igne\\ProblemDetails\\Tests\\": "tests/"
+            "Igne\\ErrorContract\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Igne\\ProblemDetails\\ProblemDetailsServiceProvider"
+                "Igne\\ErrorContract\\ErrorContractServiceProvider"
             ]
         }
     },

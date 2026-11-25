@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Igne\ProblemDetails\Tests\Fixtures;
+namespace Igne\ErrorContract\Tests\Fixtures;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;

@@ -1,4 +1,4 @@
-# igne-agency/laravel-problem-details
+# igne-agency/laravel-error-contract
 
 Answers every API error of a Laravel application as [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) Problem Details (`application/problem+json`). The package only renders: it holds no documentation and knows no documentation tool.
 
@@ -22,13 +22,13 @@ Answers every API error of a Laravel application as [RFC 9457](https://www.rfc-e
 ## Install
 
 ```bash
-composer require igne-agency/laravel-problem-details
+composer require igne-agency/laravel-error-contract
 ```
 
 Nothing else has to be registered. To change the settings, publish the config:
 
 ```bash
-php artisan vendor:publish --tag=problem-details-config
+php artisan vendor:publish --tag=error-contract-config
 ```
 
 | Key | Default | Meaning |
@@ -74,7 +74,7 @@ Any other exception, Symfony's and Laravel's own HTTP exceptions and those of a 
 
 ## Documentation
 
-This package documents nothing. [`igne-agency/laravel-scramble-extensions`](https://github.com/IGNE-Agency/laravel-api-docs) documents the errors of an API by asking the application what it answers, so it documents Problem Details when this package is installed, without the two referring to each other.
+This package documents nothing. [`igne-agency/laravel-api-docs`](https://github.com/IGNE-Agency/laravel-api-docs) documents the errors of an API by asking the application what it answers, so it documents Problem Details when this package is installed, without the two referring to each other.
 
 ## Development
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Igne\ProblemDetails;
+namespace Igne\ErrorContract;
 
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,11 +47,11 @@ final class ProblemDetails
             return false;
         }
 
-        if (is_subclass_of($exceptionClass, ProblemException::class) || is_string(config('problem-details.codes', [])[$exceptionClass] ?? null)) {
+        if (is_subclass_of($exceptionClass, ProblemException::class) || is_string(config('error-contract.codes', [])[$exceptionClass] ?? null)) {
             return true;
         }
 
-        foreach ((array) config('problem-details.namespaces', []) as $namespace) {
+        foreach ((array) config('error-contract.namespaces', []) as $namespace) {
             if (is_string($namespace) && str_starts_with($exceptionClass, rtrim($namespace, '\\').'\\')) {
                 return true;
             }
@@ -73,7 +73,7 @@ final class ProblemDetails
             return self::statusCode($status);
         }
 
-        $configured = config('problem-details.codes', [])[$exceptionClass] ?? null;
+        $configured = config('error-contract.codes', [])[$exceptionClass] ?? null;
 
         return is_string($configured) ? $configured : Str::snake(Str::beforeLast(class_basename($exceptionClass), 'Exception'));
     }

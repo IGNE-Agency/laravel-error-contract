@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Igne\ProblemDetails;
+namespace Igne\ErrorContract;
 
 use Closure;
 use Illuminate\Auth\Middleware\RequirePassword as LaravelRequirePassword;

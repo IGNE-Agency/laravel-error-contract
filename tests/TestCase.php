@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Igne\ProblemDetails\Tests;
+namespace Igne\ErrorContract\Tests;
 
-use Igne\ProblemDetails\ProblemDetailsServiceProvider;
-use Igne\ProblemDetails\Tests\Concerns\InteractsWithProblemDetails;
+use Igne\ErrorContract\ErrorContractServiceProvider;
+use Igne\ErrorContract\Tests\Concerns\InteractsWithProblemDetails;
 use Orchestra\Testbench\TestCase as Testbench;
 
 /**
@@ -17,7 +17,7 @@ abstract class TestCase extends Testbench
 
     protected function getPackageProviders($app): array
     {
-        return [ProblemDetailsServiceProvider::class];
+        return [ErrorContractServiceProvider::class];
     }
 
     protected function defineEnvironment($app): void

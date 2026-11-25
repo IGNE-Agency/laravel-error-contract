@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Igne\ProblemDetails\AssignTraceId;
+use Igne\ErrorContract\AssignTraceId;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Session\TokenMismatchException;

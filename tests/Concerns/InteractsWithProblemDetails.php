@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Igne\ProblemDetails\Tests\Concerns;
+namespace Igne\ErrorContract\Tests\Concerns;
 
-use Igne\ProblemDetails\ProblemDetails;
+use Igne\ErrorContract\ProblemDetails;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\HttpFoundation\Response;

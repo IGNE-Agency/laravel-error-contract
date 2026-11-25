@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Acme\Billing\CardDeclinedException;
-use Igne\ProblemDetails\ProblemException;
-use Igne\ProblemDetails\Tests\Fixtures\DeviceNotTrustedException;
+use Igne\ErrorContract\ProblemException;
+use Igne\ErrorContract\Tests\Fixtures\DeviceNotTrustedException;
 use Illuminate\Support\Facades\Route;
 
 require_once __DIR__.'/../Fixtures/ThirdParty.php';
@@ -26,7 +26,7 @@ it('gives the HTTP exception of a third party the code of its status and does no
 });
 
 it('names the exception of a third party the configuration gives a code', function () {
-    config(['problem-details.codes' => [CardDeclinedException::class => 'card_declined']]);
+    config(['error-contract.codes' => [CardDeclinedException::class => 'card_declined']]);
     Route::get('api/fixtures/charge', fn () => throw new CardDeclinedException);
 
     $this->assertProblem($this->getJson('/api/fixtures/charge'), 402, 'card_declined')
@@ -34,14 +34,14 @@ it('names the exception of a third party the configuration gives a code', functi
 });
 
 it('names the exceptions of a namespace the application adds', function () {
-    config(['problem-details.namespaces' => ['App\\', 'Acme\\']]);
+    config(['error-contract.namespaces' => ['App\\', 'Acme\\']]);
     Route::get('api/fixtures/charge', fn () => throw new CardDeclinedException);
 
     $this->assertProblem($this->getJson('/api/fixtures/charge'), 402, 'card_declined');
 });
 
 it('leaves an exception without a listed namespace unnamed when the list is emptied', function () {
-    config(['problem-details.namespaces' => []]);
+    config(['error-contract.namespaces' => []]);
     Route::get('api/fixtures/device', fn () => throw new DeviceNotTrustedException);
 
     $this->assertProblem($this->getJson('/api/fixtures/device'), 403, 'forbidden')->assertJsonMissingPath('detail');

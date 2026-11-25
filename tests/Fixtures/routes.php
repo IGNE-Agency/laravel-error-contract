@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Igne\ProblemDetails\Tests\Fixtures\ArticleController;
+use Igne\ErrorContract\Tests\Fixtures\ArticleController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('api/fixtures')->group(function (): void {

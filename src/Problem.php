@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Igne\ProblemDetails;
+namespace Igne\ErrorContract;
 
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Support\Arrayable;
