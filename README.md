@@ -74,7 +74,7 @@ Any other exception, Symfony's and Laravel's own HTTP exceptions and those of a 
 
 ## Documentation
 
-This package documents nothing. [`igne-agency/laravel-scramble-extensions`](https://github.com/IGNE-Agency/laravel-scramble-extensions) documents the errors of an API by asking the application what it answers, so it documents Problem Details when this package is installed, without the two referring to each other.
+This package documents nothing. [`igne-agency/laravel-scramble-extensions`](https://github.com/IGNE-Agency/laravel-api-docs) documents the errors of an API by asking the application what it answers, so it documents Problem Details when this package is installed, without the two referring to each other.
 
 ## Development
 
